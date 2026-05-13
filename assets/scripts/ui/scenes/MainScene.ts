@@ -12,6 +12,12 @@ import { GameManager } from '../../core/GameManager';
 import { MeritSystem, MeritReasons, MeritPenalties } from '../../core/MeritSystem';
 import { EventManager, GameEvents } from '../../core/EventManager';
 import { AudioManager } from '../../core/AudioManager';
+import { InputScene } from './InputScene';
+import { ShakeScene } from './ShakeScene';
+import { ReadingScene } from './ReadingScene';
+import { AlmanacScene } from './AlmanacScene';
+import { MeditateScene } from './MeditateScene';
+import { HistoryScene } from './HistoryScene';
 
 const { ccclass, property } = _decorator;
 
@@ -39,19 +45,15 @@ export class MainScene extends Component {
         const w = screenSize.width;
         const h = screenSize.height;
 
-        // 根节点
         this.rootUI = UIFactory.createNode('rootUI', this.node);
         UIFactory.setWidgetFull(this.rootUI);
 
-        // 初始化Toast管理器
         ToastManager.instance.init(this.rootUI);
 
-        // 监听功德变化弹窗
         EventManager.instance.on(GameEvents.MERIT_CHANGED, (merit: number, delta: number, reason: string) => {
             ToastManager.instance.showMeritChange(delta, reason);
         });
 
-        // 创建所有页面容器
         this.buildMainPage(w, h);
         this.buildInputPage(w, h);
         this.buildShakePage(w, h);
@@ -69,37 +71,29 @@ export class MainScene extends Component {
         const rank = MeritSystem.instance.getRankInfo();
         const theme = RankThemeManager.instance.getThemeByRank(rank);
 
-        // 主题化背景（含星空/数据流/粒子/扫描线）
         RankThemeManager.instance.renderBackground(page, w, h, theme);
 
-        // 顶部状态栏
         const topBar = UIFactory.createNode('topBar', page);
         topBar.setPosition(0, h / 2 - 80);
 
-        // 功德条（左上）
         this.meritBar = new MeritBar(topBar, 250, 14);
         this.meritBar.getNode().setPosition(-w / 4, 0);
 
-        // 段位铭牌（右上）
         this.rankBadge = new RankBadge(topBar);
         this.rankBadge.getNode().setPosition(w / 4, 0);
 
-        // 中央主题化八卦法阵
         const { node: baguaNode, startRotation } = RankThemeManager.instance.renderBaguaArray(page, theme);
         baguaNode.setPosition(0, 60);
         startRotation();
 
-        // 标题（使用段位主色调）
         UIFactory.createLabel(page, '卦  王', 42, theme.primaryColor, 'title')
             .node.setPosition(0, h / 2 - 150);
 
-        const slogan = UIFactory.createLabel(
+        UIFactory.createLabel(
             page, '以硅基演天道，以爻象定机缘', 16,
             UIFactory.COLORS.TEXT_SECONDARY, 'slogan'
-        );
-        slogan.node.setPosition(0, h / 2 - 185);
+        ).node.setPosition(0, h / 2 - 185);
 
-        // 功能按钮区（使用 CyberRenderer 风格按钮）
         const btnAreaY = -h / 4 + 40;
         const btnW = 280;
         const btnH = 60;
@@ -137,7 +131,6 @@ export class MainScene extends Component {
             name: 'btnHistory',
         }).setPosition(0, btnAreaY - btnGap * 3);
 
-        // 注册页面
         SceneManager.instance.registerPage(SceneName.MAIN, page);
     }
 
@@ -155,8 +148,6 @@ export class MainScene extends Component {
         page.getComponent(UITransform)!.setContentSize(w, h);
         page.active = false;
 
-        // InputScene 会在这个节点上构建UI
-        const { InputScene } = require('./InputScene');
         const inputScene = new InputScene();
         inputScene.build(page, w, h);
 
@@ -168,7 +159,6 @@ export class MainScene extends Component {
         page.getComponent(UITransform)!.setContentSize(w, h);
         page.active = false;
 
-        const { ShakeScene } = require('./ShakeScene');
         const shakeScene = new ShakeScene();
         shakeScene.build(page, w, h);
 
@@ -180,7 +170,6 @@ export class MainScene extends Component {
         page.getComponent(UITransform)!.setContentSize(w, h);
         page.active = false;
 
-        const { ReadingScene } = require('./ReadingScene');
         const readingScene = new ReadingScene();
         readingScene.build(page, w, h);
 
@@ -192,7 +181,6 @@ export class MainScene extends Component {
         page.getComponent(UITransform)!.setContentSize(w, h);
         page.active = false;
 
-        const { AlmanacScene } = require('./AlmanacScene');
         const almanacScene = new AlmanacScene();
         almanacScene.build(page, w, h);
 
@@ -204,7 +192,6 @@ export class MainScene extends Component {
         page.getComponent(UITransform)!.setContentSize(w, h);
         page.active = false;
 
-        const { MeditateScene } = require('./MeditateScene');
         const meditateScene = new MeditateScene();
         meditateScene.build(page, w, h);
 
@@ -216,7 +203,6 @@ export class MainScene extends Component {
         page.getComponent(UITransform)!.setContentSize(w, h);
         page.active = false;
 
-        const { HistoryScene } = require('./HistoryScene');
         const historyScene = new HistoryScene();
         historyScene.build(page, w, h);
 

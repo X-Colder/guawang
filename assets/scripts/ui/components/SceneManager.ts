@@ -1,4 +1,4 @@
-import { Node, director, tween, UIOpacity } from 'cc';
+import { Node, tween, UIOpacity, Tween } from 'cc';
 import { EventManager, GameEvents } from '../../core/EventManager';
 
 export enum SceneName {
@@ -20,10 +20,8 @@ export class SceneManager {
     private _currentScene: SceneName = SceneName.MAIN;
     private _sceneData: SceneData = {};
     private _sceneStack: SceneName[] = [];
-
-    // 所有scene组件注册在这里，由 MainScene 统一管理页面切换
     private _pageNodes: Map<SceneName, Node> = new Map();
-    private _activePageNode: Node | null = null;
+    private _switching: boolean = false;
 
     static get instance(): SceneManager {
         if (!this._instance) {
@@ -46,7 +44,10 @@ export class SceneManager {
     }
 
     goTo(scene: SceneName, data?: SceneData, pushStack: boolean = true): void {
-        if (pushStack && this._currentScene !== scene) {
+        if (this._switching) return;
+        if (scene === this._currentScene) return;
+
+        if (pushStack) {
             this._sceneStack.push(this._currentScene);
         }
 
@@ -57,26 +58,22 @@ export class SceneManager {
             this._sceneData = data;
         }
 
+        const previousScene = this._currentScene;
         this._currentScene = scene;
-        EventManager.instance.emit(GameEvents.SCENE_CHANGE, scene, data);
 
-        // 简单的淡入淡出切换
+        // 直接切换，不用动画（避免 tween 在 inactive 节点上失效）
         if (oldNode && oldNode !== newNode) {
-            let oldOpacity = oldNode.getComponent(UIOpacity);
-            if (!oldOpacity) oldOpacity = oldNode.addComponent(UIOpacity);
-            tween(oldOpacity).to(0.15, { opacity: 0 }).call(() => {
-                oldNode.active = false;
-                oldOpacity!.opacity = 255;
-            }).start();
+            Tween.stopAllByTarget(oldNode);
+            oldNode.active = false;
         }
 
         if (newNode) {
+            Tween.stopAllByTarget(newNode);
             newNode.active = true;
-            let newOpacity = newNode.getComponent(UIOpacity);
-            if (!newOpacity) newOpacity = newNode.addComponent(UIOpacity);
-            newOpacity.opacity = 0;
-            tween(newOpacity).delay(0.1).to(0.2, { opacity: 255 }).start();
         }
+
+        // 先切换完毕，再发事件（确保页面已 active）
+        EventManager.instance.emit(GameEvents.SCENE_CHANGE, scene, data);
     }
 
     goBack(data?: SceneData): void {

@@ -82,22 +82,25 @@ export class MainScene extends Component {
         this.rankBadge = new RankBadge(topBar);
         this.rankBadge.getNode().setPosition(w / 4, 0);
 
-        const { node: baguaNode, startRotation } = RankThemeManager.instance.renderBaguaArray(page, theme);
-        baguaNode.setPosition(0, 60);
-        startRotation();
-
+        // 标题区（紧凑居中布局）
         UIFactory.createLabel(page, '卦  王', 42, theme.primaryColor, 'title')
-            .node.setPosition(0, h / 2 - 150);
+            .node.setPosition(0, h * 0.28);
 
         UIFactory.createLabel(
             page, '以硅基演天道，以爻象定机缘', 16,
             UIFactory.COLORS.TEXT_SECONDARY, 'slogan'
-        ).node.setPosition(0, h / 2 - 185);
+        ).node.setPosition(0, h * 0.23);
 
-        const btnAreaY = -h / 4 + 40;
-        const btnW = 280;
-        const btnH = 60;
-        const btnGap = 80;
+        // 八卦法阵（紧贴标题下方）
+        const { node: baguaNode, startRotation } = RankThemeManager.instance.renderBaguaArray(page, theme);
+        baguaNode.setPosition(0, h * 0.05);
+        startRotation();
+
+        // 按钮区（紧贴法阵下方，间距收紧）
+        const btnAreaY = -h * 0.15;
+        const btnW = 260;
+        const btnH = 52;
+        const btnGap = 64;
 
         UIFactory.createButton(page, '起 卦 演 爻', btnW, btnH, () => {
             this.onStartDivination();

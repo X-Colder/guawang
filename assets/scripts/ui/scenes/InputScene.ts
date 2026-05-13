@@ -1,4 +1,5 @@
-import { Node, Label, Graphics, Color, EditBox, tween, UIOpacity, Vec3 } from 'cc';
+import { _decorator, Node, Label, Graphics, Color, EditBox, tween, UIOpacity, Vec3 } from 'cc';
+const { ccclass } = _decorator;
 import { UIFactory } from '../components/UIFactory';
 import { CyberEffects } from '../components/CyberEffects';
 import { SceneManager, SceneName } from '../components/SceneManager';
@@ -10,6 +11,7 @@ import { ContentValidator } from '../../divination/ContentValidator';
 import { DuplicateDetector } from '../../divination/DuplicateDetector';
 import { HexagramGenerator } from '../../divination/HexagramGenerator';
 
+@ccclass('InputScene')
 export class InputScene {
     private page: Node | null = null;
     private editBox: EditBox | null = null;

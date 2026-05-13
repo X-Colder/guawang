@@ -1,4 +1,5 @@
-import { Node, Label, Graphics, Color, tween, Vec3, UIOpacity } from 'cc';
+import { _decorator, Node, Label, Graphics, Color, tween, Vec3, UIOpacity } from 'cc';
+const { ccclass } = _decorator;
 import { UIFactory } from '../components/UIFactory';
 import { CyberEffects } from '../components/CyberEffects';
 import { HexagramDisplay } from '../components/HexagramDisplay';
@@ -8,6 +9,7 @@ import { GameManager } from '../../core/GameManager';
 import { MeritSystem, MeritReasons } from '../../core/MeritSystem';
 import { HexagramGenerator, DivinationResult } from '../../divination/HexagramGenerator';
 
+@ccclass('ShakeScene')
 export class ShakeScene {
     private page: Node | null = null;
     private hexagramDisplay: HexagramDisplay | null = null;

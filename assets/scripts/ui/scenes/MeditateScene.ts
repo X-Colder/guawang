@@ -1,4 +1,5 @@
-import { Node, Label, Graphics, Color, tween, Vec3, UIOpacity } from 'cc';
+import { _decorator, Node, Label, Graphics, Color, tween, Vec3, UIOpacity } from 'cc';
+const { ccclass } = _decorator;
 import { UIFactory } from '../components/UIFactory';
 import { CyberEffects } from '../components/CyberEffects';
 import { SceneManager, SceneName } from '../components/SceneManager';
@@ -7,6 +8,7 @@ import { EventManager, GameEvents } from '../../core/EventManager';
 import { GameManager } from '../../core/GameManager';
 import { MeritSystem, MeritReasons } from '../../core/MeritSystem';
 
+@ccclass('MeditateScene')
 export class MeditateScene {
     private page: Node | null = null;
     private contentNode: Node | null = null;

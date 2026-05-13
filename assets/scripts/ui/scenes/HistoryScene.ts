@@ -1,4 +1,5 @@
-import { Node, Label, Graphics, Color, UITransform, EditBox, tween, UIOpacity, Vec3 } from 'cc';
+import { _decorator, Node, Label, Graphics, Color, UITransform, EditBox, tween, UIOpacity, Vec3 } from 'cc';
+const { ccclass } = _decorator;
 import { UIFactory } from '../components/UIFactory';
 import { CyberEffects } from '../components/CyberEffects';
 import { SceneManager, SceneName } from '../components/SceneManager';
@@ -8,6 +9,7 @@ import { GameManager, DivinationRecord } from '../../core/GameManager';
 import { MeritSystem, MeritReasons } from '../../core/MeritSystem';
 import { HexagramDatabase } from '../../data/HexagramDatabase';
 
+@ccclass('HistoryScene')
 export class HistoryScene {
     private page: Node | null = null;
     private contentNode: Node | null = null;

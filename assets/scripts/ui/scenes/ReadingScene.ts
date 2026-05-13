@@ -1,4 +1,5 @@
-import { Node, Label, Graphics, Color, UITransform, ScrollView, tween, UIOpacity, Vec3 } from 'cc';
+import { _decorator, Node, Label, Graphics, Color, UITransform, ScrollView, tween, UIOpacity, Vec3 } from 'cc';
+const { ccclass } = _decorator;
 import { UIFactory } from '../components/UIFactory';
 import { CyberEffects } from '../components/CyberEffects';
 import { HexagramDisplay } from '../components/HexagramDisplay';
@@ -11,6 +12,7 @@ import { HexagramInterpreter } from '../../divination/HexagramInterpreter';
 import { DivinationResult, HexagramGenerator } from '../../divination/HexagramGenerator';
 import { HexagramDatabase } from '../../data/HexagramDatabase';
 
+@ccclass('ReadingScene')
 export class ReadingScene {
     private page: Node | null = null;
     private contentNode: Node | null = null;

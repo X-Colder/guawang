@@ -74,7 +74,7 @@ export class MainScene extends Component {
         RankThemeManager.instance.renderBackground(page, w, h, theme);
 
         const topBar = UIFactory.createNode('topBar', page);
-        topBar.setPosition(0, h / 2 - 80);
+        topBar.setPosition(0, h / 2 - 60);
 
         this.meritBar = new MeritBar(topBar, 250, 14);
         this.meritBar.getNode().setPosition(-w / 4, 0);
@@ -82,25 +82,32 @@ export class MainScene extends Component {
         this.rankBadge = new RankBadge(topBar);
         this.rankBadge.getNode().setPosition(w / 4, 0);
 
-        // 标题区（紧凑居中布局）
-        UIFactory.createLabel(page, '卦  王', 42, theme.primaryColor, 'title')
-            .node.setPosition(0, h * 0.28);
+        // 黄金分割：上部 0.618 为视觉中心（标题+太极图），下部 0.382 为按钮区
+        const goldenY = -h * 0.5 + h * 0.618;  // 黄金分割线 y 坐标
+        const visualCenter = goldenY * 0.5;      // 太极图视觉中心
+
+        // 标题紧贴太极图上方
+        UIFactory.createLabel(page, '卦  王', 46, theme.primaryColor, 'title')
+            .node.setPosition(0, visualCenter + h * 0.18);
 
         UIFactory.createLabel(
             page, '以硅基演天道，以爻象定机缘', 16,
             UIFactory.COLORS.TEXT_SECONDARY, 'slogan'
-        ).node.setPosition(0, h * 0.23);
+        ).node.setPosition(0, visualCenter + h * 0.14);
 
-        // 八卦法阵（紧贴标题下方）
+        // 八卦法阵（居于视觉中心，增大尺寸）
         const { node: baguaNode, startRotation } = RankThemeManager.instance.renderBaguaArray(page, theme);
-        baguaNode.setPosition(0, h * 0.05);
+        baguaNode.setPosition(0, visualCenter);
         startRotation();
 
-        // 按钮区（紧贴法阵下方，间距收紧）
-        const btnAreaY = -h * 0.15;
-        const btnW = 260;
-        const btnH = 52;
-        const btnGap = 64;
+        // 山水光晕动效
+        RankThemeManager.instance.renderInkGlow(page, 0, visualCenter, theme);
+
+        // 按钮区（黄金分割线下方，间距适中）
+        const btnAreaY = goldenY - h * 0.62;
+        const btnW = w * 0.7;
+        const btnH = 56;
+        const btnGap = 68;
 
         UIFactory.createButton(page, '起 卦 演 爻', btnW, btnH, () => {
             this.onStartDivination();

@@ -54,7 +54,7 @@ const RANK_THEMES: RankTheme[] = [
         accentColor: new Color(80, 90, 120, 255),
         textColor: new Color(150, 160, 180, 255),
         baguaStyle: 'dim',
-        baguaRadius: 120,
+        baguaRadius: 160,
         particleCount: 5,
         particleSizeRange: [0.5, 1.5],
         particleSpeedRange: [0.3, 0.8],
@@ -81,7 +81,7 @@ const RANK_THEMES: RankTheme[] = [
         accentColor: new Color(100, 200, 255, 255),
         textColor: new Color(180, 200, 240, 255),
         baguaStyle: 'basic',
-        baguaRadius: 130,
+        baguaRadius: 170,
         particleCount: 12,
         particleSizeRange: [0.5, 2],
         particleSpeedRange: [0.5, 1.2],
@@ -108,7 +108,7 @@ const RANK_THEMES: RankTheme[] = [
         accentColor: new Color(60, 255, 200, 255),
         textColor: new Color(200, 230, 255, 255),
         baguaStyle: 'glow',
-        baguaRadius: 140,
+        baguaRadius: 180,
         particleCount: 20,
         particleSizeRange: [1, 3],
         particleSpeedRange: [0.5, 1.5],
@@ -135,7 +135,7 @@ const RANK_THEMES: RankTheme[] = [
         accentColor: new Color(255, 120, 255, 255),
         textColor: new Color(220, 200, 255, 255),
         baguaStyle: 'hologram',
-        baguaRadius: 145,
+        baguaRadius: 185,
         particleCount: 30,
         particleSizeRange: [1, 3.5],
         particleSpeedRange: [0.8, 2],
@@ -162,7 +162,7 @@ const RANK_THEMES: RankTheme[] = [
         accentColor: new Color(255, 200, 120, 255),
         textColor: new Color(240, 220, 255, 255),
         baguaStyle: 'celestial',
-        baguaRadius: 155,
+        baguaRadius: 195,
         particleCount: 40,
         particleSizeRange: [1, 4],
         particleSpeedRange: [1, 2.5],
@@ -189,7 +189,7 @@ const RANK_THEMES: RankTheme[] = [
         accentColor: new Color(255, 240, 180, 255),
         textColor: new Color(255, 240, 200, 255),
         baguaStyle: 'divine',
-        baguaRadius: 165,
+        baguaRadius: 200,
         particleCount: 60,
         particleSizeRange: [1, 5],
         particleSpeedRange: [1.2, 3],
@@ -473,11 +473,11 @@ export class RankThemeManager {
             );
         }
 
-        // 中央太极
+        // 中央太极（放大尺寸）
         const taijiColor = theme.baguaStyle === 'divine'
             ? new Color(255, 200, 60, 220)
             : new Color(color.r, color.g, color.b, Math.floor(80 + theme.coinGlowIntensity * 175));
-        CyberRenderer.drawTaiJiDetailed(g, 0, 0, r * 0.2, taijiColor);
+        CyberRenderer.drawTaiJiDetailed(g, 0, 0, r * 0.45, taijiColor);
 
         // 旋转
         const startRotation = () => {
@@ -499,6 +499,101 @@ export class RankThemeManager {
             .start();
 
         return { node, startRotation };
+    }
+
+    // 渲染黑白山水光晕动效（太极图周围的水墨晕染效果）
+    renderInkGlow(parent: Node, cx: number, cy: number, theme: RankTheme): void {
+        const r = theme.baguaRadius;
+
+        // 第一层：大范围淡白色光晕（远山意境）
+        const glowOuter = UIFactory.createNode('inkGlowOuter', parent);
+        glowOuter.setPosition(cx, cy);
+        const gOuter = glowOuter.addComponent(Graphics);
+        for (let i = 3; i >= 0; i--) {
+            const layerR = r * (1.3 + i * 0.15);
+            const alpha = Math.floor(8 + i * 4);
+            gOuter.fillColor = new Color(255, 255, 255, alpha);
+            gOuter.circle(0, 0, layerR);
+            gOuter.fill();
+        }
+
+        const outerOpacity = glowOuter.addComponent(UIOpacity);
+        outerOpacity.opacity = 0;
+        tween(outerOpacity)
+            .repeatForever(
+                tween(outerOpacity)
+                    .to(4, { opacity: 120 })
+                    .to(3, { opacity: 40 })
+                    .to(4, { opacity: 100 })
+                    .to(3, { opacity: 0 })
+            )
+            .start();
+
+        // 第二层：墨色晕染环（近水倒影）
+        const glowInk = UIFactory.createNode('inkGlowDark', parent);
+        glowInk.setPosition(cx, cy);
+        const gInk = glowInk.addComponent(Graphics);
+        for (let i = 2; i >= 0; i--) {
+            const layerR = r * (1.1 + i * 0.12);
+            const alpha = Math.floor(12 + i * 6);
+            gInk.fillColor = new Color(20, 25, 35, alpha);
+            gInk.circle(0, 0, layerR);
+            gInk.fill();
+        }
+
+        const inkOpacity = glowInk.addComponent(UIOpacity);
+        inkOpacity.opacity = 80;
+        tween(inkOpacity)
+            .repeatForever(
+                tween(inkOpacity)
+                    .to(5, { opacity: 160 })
+                    .to(4, { opacity: 60 })
+                    .to(5, { opacity: 140 })
+                    .to(4, { opacity: 80 })
+            )
+            .start();
+
+        // 第三层：白色弧形山脊光带
+        const glowArc = UIFactory.createNode('inkGlowArc', parent);
+        glowArc.setPosition(cx, cy);
+        const gArc = glowArc.addComponent(Graphics);
+
+        gArc.strokeColor = new Color(255, 255, 255, 25);
+        gArc.lineWidth = r * 0.08;
+        gArc.arc(0, 0, r * 1.25, -Math.PI * 0.7, -Math.PI * 0.3, false);
+        gArc.stroke();
+
+        gArc.strokeColor = new Color(200, 210, 230, 18);
+        gArc.lineWidth = r * 0.06;
+        gArc.arc(0, 0, r * 1.4, Math.PI * 0.2, Math.PI * 0.6, false);
+        gArc.stroke();
+
+        const arcOpacity = glowArc.addComponent(UIOpacity);
+        arcOpacity.opacity = 0;
+        tween(arcOpacity)
+            .repeatForever(
+                tween(arcOpacity)
+                    .delay(1)
+                    .to(3, { opacity: 200 })
+                    .to(2, { opacity: 80 })
+                    .to(3, { opacity: 180 })
+                    .to(2, { opacity: 0 })
+                    .delay(1)
+            )
+            .start();
+
+        // 缓慢旋转整体光晕（模拟云气流动）
+        tween(glowOuter)
+            .repeatForever(
+                tween(glowOuter).by(30, { eulerAngles: new Vec3(0, 0, 360) })
+            )
+            .start();
+
+        tween(glowArc)
+            .repeatForever(
+                tween(glowArc).by(45, { eulerAngles: new Vec3(0, 0, -360) })
+            )
+            .start();
     }
 
     // 渲染主题化的铜钱组

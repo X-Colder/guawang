@@ -82,18 +82,18 @@ export class MainScene extends Component {
         this.rankBadge = new RankBadge(topBar);
         this.rankBadge.getNode().setPosition(w / 4, 0);
 
-        // 黄金分割：上部 0.618 为视觉中心（标题+太极图），下部 0.382 为按钮区
-        const goldenY = -h * 0.5 + h * 0.618;  // 黄金分割线 y 坐标
-        const visualCenter = goldenY * 0.5;      // 太极图视觉中心
+        // 黄金比例布局：太极图略偏上，标题紧贴其上，按钮紧贴其下
+        const baguaR = theme.baguaRadius;
+        const visualCenter = h * 0.02;
 
-        // 标题紧贴太极图上方
+        // 标题区：紧贴八卦法阵上方
         UIFactory.createLabel(page, '卦  王', 46, theme.primaryColor, 'title')
-            .node.setPosition(0, visualCenter + h * 0.18);
+            .node.setPosition(0, visualCenter + baguaR + 66);
 
         UIFactory.createLabel(
             page, '以硅基演天道，以爻象定机缘', 16,
             UIFactory.COLORS.TEXT_SECONDARY, 'slogan'
-        ).node.setPosition(0, visualCenter + h * 0.14);
+        ).node.setPosition(0, visualCenter + baguaR + 30);
 
         // 八卦法阵（居于视觉中心，增大尺寸）
         const { node: baguaNode, startRotation } = RankThemeManager.instance.renderBaguaArray(page, theme);
@@ -103,11 +103,11 @@ export class MainScene extends Component {
         // 山水光晕动效
         RankThemeManager.instance.renderInkGlow(page, 0, visualCenter, theme);
 
-        // 按钮区（黄金分割线下方，间距适中）
-        const btnAreaY = goldenY - h * 0.62;
+        // 按钮区：紧贴八卦法阵下方
+        const btnAreaY = visualCenter - baguaR - 60;
         const btnW = w * 0.7;
         const btnH = 56;
-        const btnGap = 68;
+        const btnGap = 66;
 
         UIFactory.createButton(page, '起 卦 演 爻', btnW, btnH, () => {
             this.onStartDivination();
